@@ -1,8 +1,5 @@
 # Custom RegEx Engine
 
-#### swagger ui
-* [swagger](http://localhost:8080/swagger-ui/index.html)
-
 #### Example usage
 ```java
     @Autowired
