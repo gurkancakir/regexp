@@ -1,10 +1,9 @@
 package com.luxoft.regexp.engine;
 
 import com.luxoft.regexp.engine.core.RegexStep;
-import com.luxoft.regexp.engine.matcher.LengthMatcher;
-import com.luxoft.regexp.engine.matcher.StringMatcher;
 import com.luxoft.regexp.engine.response.SplitResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,8 +23,11 @@ public class Pattern {
 
     private final List<RegexStep> regexSteps;
 
-    private final LengthMatcher lengthMatcher;
-    private final StringMatcher stringMatcher;
+    @Qualifier("lengthMatcher")
+    private final RegexStep lengthMatcher;
+
+    @Qualifier("stringMatcher")
+    private final RegexStep stringMatcher;
 
     public Matcher compile(String pattern) {
         String currentPattern = pattern;
