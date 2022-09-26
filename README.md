@@ -1,12 +1,21 @@
 # Custom RegEx Engine
 
+#### Rest Request
+POST - http://localhost:8080/api/v1/regex
+```json
+{
+  "regex": "a*bcd?xp gu...n[abc]4+55",
+  "text": "abcdxp gurkanb4444444455"
+}
+```
+
 #### Example usage
 ```java
     @Autowired
     private Pattern pattern;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void regex() throws Exception {
         Matcher matcher = pattern.compile("a*bcd?xp gu...n[abc]4");
         boolean result = matcher.matches("abcdxp gurkanb4");
         System.out.println("Result : " + result);
