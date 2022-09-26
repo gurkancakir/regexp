@@ -26,4 +26,18 @@ DotMatcher(pattern=., prefix=, suffix=)                                 MatchRes
 DotMatcher(pattern=.an, prefix=, suffix=an)                             MatchResponse(result=true, index=3)                                   
 LengthMatcher()                                                         MatchResponse(result=true, index=0)                                   
 -----------------------------------
+
+
+Regex : a*bcd?xp gu...n[abc]4+55
+Input : abcdxp gurkanb4444444455
+-----------------------------------
+StarMatcher(pattern=a*bc, prefix=a, suffix=bc)                          MatchResponse(result=true, index=3)                                   
+QuestionMatcher(pattern=d?xp gu, prefix=d, suffix=xp gu)                MatchResponse(result=true, index=6)                                   
+DotMatcher(pattern=., prefix=, suffix=)                                 MatchResponse(result=true, index=1)                                   
+DotMatcher(pattern=., prefix=, suffix=)                                 MatchResponse(result=true, index=1)                                   
+DotMatcher(pattern=.n, prefix=, suffix=n)                               MatchResponse(result=true, index=2)                                   
+GroupMatcher(pattern=[abc], prefix=[a, b, c], suffix=)                  MatchResponse(result=true, index=1)                                   
+PlusMatcher(pattern=4+55, prefix=4, suffix=55)                          MatchResponse(result=true, index=10)                                  
+LengthMatcher()                                                         MatchResponse(result=true, index=0)                                   
+-----------------------------------
 ```
