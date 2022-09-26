@@ -1,5 +1,6 @@
 package com.luxoft.regexp.engine;
 
+import com.luxoft.regexp.engine.core.Step;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +25,10 @@ public class Pattern {
     public Matcher compile(String pattern) {
         Matcher matcher = new Matcher(new Stack<>());
         int lastIndex = pattern.length();
-        for (int i = pattern.length() - 1; i > 0; i--) {
+        for (int i = pattern.length() - 1; i >= 0; i--) {
             for (Step step : steps) {
                 if (step.isAcceptable(pattern.charAt(i))) {
-                    Step current = step.create(pattern.substring(i - 1, lastIndex));
+                    Step current = step.create(step.split(pattern, i, lastIndex));
                     lastIndex = i - 1;
                     matcher.add(current);
                 }

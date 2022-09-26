@@ -1,5 +1,7 @@
 package com.luxoft.regexp.engine;
 
+import com.luxoft.regexp.engine.core.Step;
+import com.luxoft.regexp.engine.response.MatchResponse;
 import lombok.AllArgsConstructor;
 
 import java.util.Stack;
@@ -17,8 +19,7 @@ public class Matcher {
         while (!steps.isEmpty()) {
             Step step = steps.pop();
             MatchResponse response = step.matches(text.substring(index));
-            System.out.println(step);
-            System.out.println(response);
+            System.out.printf("%-90.90s  %-90.90s%n", step, response);
             if (!response.getResult())
                 return false;
             index += response.getIndex();

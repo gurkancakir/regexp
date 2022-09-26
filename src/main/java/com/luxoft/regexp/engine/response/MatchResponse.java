@@ -1,4 +1,4 @@
-package com.luxoft.regexp.engine;
+package com.luxoft.regexp.engine.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
