@@ -1,8 +1,9 @@
 package com.luxoft.regexp.engine.matcher;
 
-import com.luxoft.regexp.engine.core.AbstractStepMatcher;
+import com.luxoft.regexp.engine.core.AbstractRegexStepMatcher;
 import com.luxoft.regexp.engine.response.MatchResponse;
-import com.luxoft.regexp.engine.core.Step;
+import com.luxoft.regexp.engine.core.RegexStep;
+import com.luxoft.regexp.engine.response.SplitResponse;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -10,11 +11,11 @@ import java.util.List;
 
 @Data
 @Component
-public class GroupMatcher extends AbstractStepMatcher {
+public class GroupMatcher extends AbstractRegexStepMatcher {
 
     private String pattern;
     private List<Character> prefix;
-    private String suffix;
+    private String suffix = "";
 
     private static final char IND_START = '[';
     private static final char IND_END = ']';
@@ -25,7 +26,7 @@ public class GroupMatcher extends AbstractStepMatcher {
     }
 
     @Override
-    public Step create(String pattern) {
+    public RegexStep create(String pattern) {
         GroupMatcher step = new GroupMatcher();
         step.setPattern(pattern);
         int startIndex = pattern.indexOf(IND_START);
@@ -41,15 +42,19 @@ public class GroupMatcher extends AbstractStepMatcher {
 
     @Override
     public MatchResponse matches(String text) {
-        char ch = text.charAt(1);
-        int lastIndex = 2;
+        char ch = text.charAt(0);
+        int lastIndex = 1;
         boolean result =  checkPrefix(ch) && checkSuffix(text, lastIndex);
         return buildResponse(result, lastIndex);
     }
 
+
     @Override
-    public String split(String pattern, int i, int lastIndex) {
-        return pattern.substring(i, lastIndex);
+    public SplitResponse split(String pattern, int index) {
+        SplitResponse splitResponse = new SplitResponse();
+        splitResponse.setSplitted(pattern.substring(index));
+        splitResponse.setRemaining(pattern.substring(0, index));
+        return splitResponse;
     }
 
     private boolean checkPrefix(char ch) {

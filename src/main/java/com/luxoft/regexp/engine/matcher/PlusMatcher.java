@@ -1,15 +1,15 @@
 package com.luxoft.regexp.engine.matcher;
 
-import com.luxoft.regexp.engine.core.AbstractStepMatcher;
+import com.luxoft.regexp.engine.core.AbstractRegexStepMatcher;
 import com.luxoft.regexp.engine.response.MatchResponse;
-import com.luxoft.regexp.engine.core.Step;
+import com.luxoft.regexp.engine.core.RegexStep;
 import com.luxoft.regexp.engine.response.PrefixResponse;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class PlusMatcher extends AbstractStepMatcher {
+public class PlusMatcher extends AbstractRegexStepMatcher {
 
     private String pattern;
     private String prefix;
@@ -23,7 +23,7 @@ public class PlusMatcher extends AbstractStepMatcher {
     }
 
     @Override
-    public Step create(String pattern) {
+    public RegexStep create(String pattern) {
         PlusMatcher step = new PlusMatcher();
         step.setPattern(pattern);
         int index = pattern.indexOf(IND);

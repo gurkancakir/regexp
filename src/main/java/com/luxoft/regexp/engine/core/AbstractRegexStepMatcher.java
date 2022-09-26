@@ -3,31 +3,15 @@ package com.luxoft.regexp.engine.core;
 import com.luxoft.regexp.engine.response.MatchResponse;
 import com.luxoft.regexp.engine.response.PrefixResponse;
 
-public abstract class AbstractStepMatcher implements Step {
+public abstract class AbstractRegexStepMatcher implements RegexStep {
 
-    protected static final char DOT = '.';
 
     public abstract String getSuffix();
-
-    protected boolean isSuffixIncludeDot() {
-        return getSuffix().contains(String.valueOf(DOT));
-    }
-
-    protected boolean checkSuffix(String text, String input) {
-        for (int i = 0; i < text.length(); i++) {
-            if (DOT == text.charAt(i)) ; //nothing
-            else if (text.charAt(i) != input.charAt(i))
-                return false;
-        }
-        return true;
-    }
 
     protected boolean checkSuffix(String text, int lastIndex) {
         if (text.substring(lastIndex).length() < getSuffix().length())
             return false;
         String input = text.substring(lastIndex, lastIndex + getSuffix().length());
-        if (isSuffixIncludeDot())
-            return checkSuffix(getSuffix(), input);
         return getSuffix().equals(input);
     }
 

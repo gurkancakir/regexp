@@ -34,6 +34,11 @@ public class PatternMatcherTest {
                 Arguments.of("lux*oft", "luoft", true),
                 Arguments.of("lux*oft", "luxoft", true),
                 Arguments.of("lux*oft", "luxxxxxxoft", true),
+                Arguments.of("lu+xoft+", "luxof", false),
+                Arguments.of("lu+xoft+", "luuuuxof", false),
+                Arguments.of("lu+xoft", "luxoft", true),
+                Arguments.of("lu+xoft", "luuuuxoft", true),
+                Arguments.of("lu+xoft", "lxoft", false),
                 Arguments.of("a*bcd?xp gu...n[abc]4+55", "abcdxp gurkanb4444444455", true)
         );
     }
