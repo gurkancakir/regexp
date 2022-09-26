@@ -1,13 +1,15 @@
 package com.luxoft.regexp.engine.matcher;
 
-import com.luxoft.regexp.engine.MatchResponse;
-import com.luxoft.regexp.engine.Step;
+import com.luxoft.regexp.engine.core.AbstractRegexStepMatcher;
+import com.luxoft.regexp.engine.response.MatchResponse;
+import com.luxoft.regexp.engine.core.RegexStep;
+import com.luxoft.regexp.engine.response.PrefixResponse;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class PlusMatcher implements Step {
+public class PlusMatcher extends AbstractRegexStepMatcher {
 
     private String pattern;
     private String prefix;
@@ -21,7 +23,7 @@ public class PlusMatcher implements Step {
     }
 
     @Override
-    public Step create(String pattern) {
+    public RegexStep create(String pattern) {
         PlusMatcher step = new PlusMatcher();
         step.setPattern(pattern);
         int index = pattern.indexOf(IND);
@@ -32,42 +34,12 @@ public class PlusMatcher implements Step {
 
     @Override
     public MatchResponse matches(String text) {
-        int prefixCount = 0;
-        int lastIndex = 0;
-        for (int i = 0; i < text.length(); i++) {
-            if (getPrefix().equals(String.valueOf(text.charAt(i))))
-                prefixCount++;
-            else {
-                lastIndex = i;
-                break;
-            }
-        }
-        String temp = text.substring(lastIndex, lastIndex + suffix.length());
-        System.out.println("temp " + temp + " count " + prefixCount + " index " + lastIndex + " text " + text);
-        boolean result =  prefixCount >= 1 && checkSuffix(text, lastIndex);
-        return new MatchResponse(result, lastIndex + suffix.length());
+        PrefixResponse prefixResponse = searchPrefix(text, getPrefix());
+        boolean result =  checkPrefix(prefixResponse.getPrefixCount()) && checkSuffix(text, prefixResponse.getLastIndex());
+        return buildResponse(result, prefixResponse.getLastIndex());
     }
 
-    private boolean checkSuffix(String text, int lastIndex) {
-        if (text.substring(lastIndex).length() < suffix.length())
-            return false;
-        String input = text.substring(lastIndex, lastIndex + suffix.length());
-        if (isSuffixIncludeDot())
-            return checkSuffix(getSuffix(), input);
-        return getSuffix().equals(input);
-    }
-
-    private boolean checkSuffix(String text, String input) {
-        for (int i = 0; i < text.length(); i++) {
-            if ('.' == text.charAt(i))
-                continue;
-            else if (text.charAt(i) != input.charAt(i))
-                return false;
-        }
-        return true;
-    }
-
-    private boolean isSuffixIncludeDot() {
-        return getSuffix().contains(".");
+    private boolean checkPrefix(int prefixCount) {
+        return prefixCount >= 1;
     }
 }

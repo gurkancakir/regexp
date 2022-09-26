@@ -1,21 +1,21 @@
 package com.luxoft.regexp.engine.matcher;
 
-import com.luxoft.regexp.engine.MatchResponse;
-import com.luxoft.regexp.engine.Step;
+import com.luxoft.regexp.engine.core.AbstractRegexStepMatcher;
+import com.luxoft.regexp.engine.response.MatchResponse;
+import com.luxoft.regexp.engine.core.RegexStep;
+import com.luxoft.regexp.engine.response.SplitResponse;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Component
-public class GroupMatcher implements Step {
+public class GroupMatcher extends AbstractRegexStepMatcher {
 
     private String pattern;
     private List<Character> prefix;
-    private String suffix;
+    private String suffix = "";
 
     private static final char IND_START = '[';
     private static final char IND_END = ']';
@@ -26,46 +26,38 @@ public class GroupMatcher implements Step {
     }
 
     @Override
-    public Step create(String pattern) {
+    public RegexStep create(String pattern) {
         GroupMatcher step = new GroupMatcher();
-        step.setPattern(pattern.substring(1));
-        int index = pattern.indexOf(IND_END);
-        List<Character> chars = pattern.substring(2, index)
+        step.setPattern(pattern);
+        int startIndex = pattern.indexOf(IND_START);
+        int endIndex = pattern.indexOf(IND_END);
+        List<Character> chars = pattern
+                .substring(startIndex + 1, endIndex)
                 .chars()
                 .mapToObj(e -> (char) e).toList();
         step.setPrefix(chars);
-        step.setSuffix(pattern.substring(index + 1));
+        step.setSuffix(pattern.substring(endIndex + 1));
         return step;
     }
 
     @Override
     public MatchResponse matches(String text) {
-        char first = text.charAt(1);
-        int lastIndex = 2;
-        boolean result =  getPrefix().contains(first) && checkSuffix(text, lastIndex);
-        return new MatchResponse(result, lastIndex + suffix.length());
+        char ch = text.charAt(0);
+        int lastIndex = 1;
+        boolean result =  checkPrefix(ch) && checkSuffix(text, lastIndex);
+        return buildResponse(result, lastIndex);
     }
 
-    private boolean checkSuffix(String text, int lastIndex) {
-        if (text.substring(lastIndex).length() < suffix.length())
-            return false;
-        String input = text.substring(lastIndex, lastIndex + suffix.length());
-        if (isSuffixIncludeDot())
-            return checkSuffix(getSuffix(), input);
-        return getSuffix().equals(input);
+
+    @Override
+    public SplitResponse split(String pattern, int index) {
+        SplitResponse splitResponse = new SplitResponse();
+        splitResponse.setSplitted(pattern.substring(index));
+        splitResponse.setRemaining(pattern.substring(0, index));
+        return splitResponse;
     }
 
-    private boolean checkSuffix(String text, String input) {
-        for (int i = 0; i < text.length(); i++) {
-            if ('.' == text.charAt(i))
-                continue;
-            else if (text.charAt(i) != input.charAt(i))
-                return false;
-        }
-        return true;
-    }
-
-    private boolean isSuffixIncludeDot() {
-        return getSuffix().contains(".");
+    private boolean checkPrefix(char ch) {
+        return getPrefix().contains(ch);
     }
 }

@@ -1,5 +1,9 @@
 package com.luxoft.regexp.engine;
 
+import com.luxoft.regexp.engine.core.RegexStep;
+import com.luxoft.regexp.engine.matcher.LengthMatcher;
+import com.luxoft.regexp.engine.matcher.StringMatcher;
+import com.luxoft.regexp.engine.response.SplitResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,20 +22,33 @@ public class Pattern {
         + - one or more times
      */
 
-    private final List<Step> steps;
+    private final List<RegexStep> regexSteps;
 
+    private final LengthMatcher lengthMatcher;
+    private final StringMatcher stringMatcher;
 
     public Matcher compile(String pattern) {
-        Matcher matcher = new Matcher(new Stack<>());
-        int lastIndex = pattern.length();
-        for (int i = pattern.length() - 1; i > 0; i--) {
-            for (Step step : steps) {
-                if (step.isAcceptable(pattern.charAt(i))) {
-                    Step current = step.create(pattern.substring(i - 1, lastIndex));
-                    lastIndex = i - 1;
+        String currentPattern = pattern;
+        Stack<RegexStep> stack = new Stack<>();
+        Matcher matcher = new Matcher(stack);
+        matcher.add(lengthMatcher.create(""));
+
+        int index = currentPattern.length() - 1;
+        while (index >= 0) {
+            for (RegexStep regexStep : regexSteps) {
+                if (regexStep.isAcceptable(currentPattern.charAt(index))) {
+                    SplitResponse splitResponse = regexStep.split(currentPattern, index);
+                    currentPattern = splitResponse.getRemaining();
+                    index = currentPattern.length();
+                    RegexStep current = regexStep.create(splitResponse.getSplitted());
                     matcher.add(current);
+                    break;
                 }
             }
+            index--;
+        }
+        if (!currentPattern.isEmpty()) {
+            matcher.add(stringMatcher.create(currentPattern));
         }
         return matcher;
     }
